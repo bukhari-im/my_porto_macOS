@@ -394,3 +394,11 @@ body {
     }
   }
 }
+.text-glow-blue {
+  color: #60a5fa;
+  text-shadow:
+    0 0 5px #3b82f6,
+    0 0 10px #3b82f6,
+    0 0 20px #2563eb,
+    0 0 40px #1d4ed8;
+}
