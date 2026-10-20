@@ -31,31 +31,48 @@ const setupTextHover = (container, type) => {
   };
 
   const handleMouseMove = (e) => {
-    const { left } = container.getBoundingClientRect();
-    const mouseX = e.clientX - left;
+    const rect = container.getBoundingClientRect();
+
+    const mouseX = e.clientX;
+    const mouseY = e.clientY;
+
+    // Cek apakah mouse sedang berada di area tulisan
+    const isInside =
+      mouseX >= rect.left &&
+      mouseX <= rect.right &&
+      mouseY >= rect.top &&
+      mouseY <= rect.bottom;
+
+    if (!isInside) {
+      letters.forEach((letter) =>
+        animateLetter(letter, base, 0.3)
+      );
+      return;
+    }
 
     letters.forEach((letter) => {
-      const { left: l, width: W } = letter.getBoundingClientRect();
+      const letterRect = letter.getBoundingClientRect();
 
-      const distance = Math.abs(
-        mouseX - (l - left + W / 2)
+      const letterCenter =
+        letterRect.left + letterRect.width / 2;
+
+      const distance = Math.abs(mouseX - letterCenter);
+
+      const intensity = Math.exp(
+        -(distance ** 2) / 10000
       );
 
-      const intensity = Math.exp(-(distance ** 2) / 10000);
+      const weight =
+        min + (max - min) * intensity;
 
-      animateLetter(
-        letter,
-        min + (max - min) * intensity
-      );
+      animateLetter(letter, weight);
     });
   };
-  const handleMouseLeave = () => letters.forEach((letter) => animateLetter(letter, base, 0.3));
 
-  container.addEventListener("mousemove", handleMouseMove);
-  container.addEventListener("mouseleave", handleMouseLeave);
+  window.addEventListener("mousemove", handleMouseMove);
+
   return () => {
-    container.removeEventListener("mousemove", handleMouseMove);
-    container.removeEventListener("mouseleave", handleMouseLeave);
+    window.removeEventListener("mousemove", handleMouseMove);
   };
 };
 
